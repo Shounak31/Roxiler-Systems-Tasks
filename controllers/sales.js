@@ -48,7 +48,7 @@ async function getStatistics(req, res) {
     };
 
   } catch (error) {
-    handleError(res, 'Error fetching statistics data:')(error);
+    handleError(res, 'Error fetching statistics data:',error);
   }
 }
 
@@ -92,7 +92,7 @@ async function getPriceRangeData(req, res) {
     return countsByRange;
 
   } catch (error) {
-    handleError(res, 'Error fetching price range data:')(error);
+    handleError(res, 'Error fetching price range data:',error);
   }
 }
 
@@ -127,7 +127,7 @@ async function getCategoryCount(req, res) {
     return categoryCountsArray;
 
   } catch (error) {
-    handleError(res, 'Error fetching category count data:')(error);
+    handleError(res, 'Error fetching category count data:',error);
   }
 }
 
