@@ -17,6 +17,14 @@ function getMonthRange(month) {
   return { startDate, endDate };
 }
 
+function handleError(res, errorMessage) {
+  return (error) => {
+    console.error(errorMessage, error);
+    res.status(500).json({ message: 'Internal server error' });
+    throw error;
+  };
+}
+
 async function getStatistics(req, res) {
   try {
     const { month } = req.params;
@@ -27,7 +35,7 @@ async function getStatistics(req, res) {
         $gte: startDate,
         $lte: endDate
       }
-    }).select('price sold'); // Example of using select to limit fields fetched
+    });
 
     const totalSalesAmount = products.reduce((sum, product) => sum + product.price, 0);
     const totalSoldItems = products.filter(product => product.sold).length;
@@ -40,8 +48,7 @@ async function getStatistics(req, res) {
     };
 
   } catch (error) {
-    console.error('Error fetching statistics:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    handleError(res, 'Error fetching statistics data:')(error);
   }
 }
 
@@ -50,45 +57,42 @@ async function getPriceRangeData(req, res) {
     const { month } = req.params;
     const { startDate, endDate } = getMonthRange(month);
 
-    const products = await Product.aggregate([
-      {
-        $match: {
-          dateOfSale: {
-            $gte: startDate,
-            $lte: endDate
-          }
-        }
-      },
-      {
-        $group: {
-          _id: null,
-          countsByRange: {
-            $push: {
-              range: {
-                $switch: {
-                  branches: [
-                    { case: { $and: [{ $gte: ['$price', 0] }, { $lte: ['$price', 100] }] }, then: '0 - 100' },
-                    // Add other cases for different price ranges
-                  ],
-                  default: 'Unknown'
-                }
-              },
-              count: { $sum: 1 }
-            }
-          }
+    const products = await Product.find({
+      dateOfSale: {
+        $gte: startDate,
+        $lte: endDate
+      }
+    });
+
+    const priceRanges = [
+      { range: '0 - 100', min: 0, max: 100 },
+      { range: '101 - 200', min: 101, max: 200 },
+      { range: '201 - 300', min: 201, max: 300 },
+      { range: '301 - 400', min: 301, max: 400 },
+      { range: '401 - 500', min: 401, max: 500 },
+      { range: '501 - 600', min: 501, max: 600 },
+      { range: '601 - 700', min: 601, max: 700 },
+      { range: '701 - 800', min: 701, max: 800 },
+      { range: '801 - 900', min: 801, max: 900 },
+      { range: '901 - above', min: 901, max: Infinity }
+    ];
+
+    const countsByRange = priceRanges.map(range => ({ range: range.range, count: 0 }));
+
+    products.forEach(product => {
+      const price = product.price;
+      for (let i = 0; i < priceRanges.length; i++) {
+        if (price >= priceRanges[i].min && price <= priceRanges[i].max) {
+          countsByRange[i].count++;
+          break;
         }
       }
-    ]);
+    });
 
-    if (products.length === 0) {
-      return res.status(404).json({ message: 'No data found' });
-    }
-
-    return products[0].countsByRange;
+    return countsByRange;
 
   } catch (error) {
-    console.error('Error fetching price range data:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    handleError(res, 'Error fetching price range data:')(error);
   }
 }
 
@@ -97,32 +101,33 @@ async function getCategoryCount(req, res) {
     const { month } = req.params;
     const { startDate, endDate } = getMonthRange(month);
 
-    const categoryCounts = await Product.aggregate([
-      {
-        $match: {
-          dateOfSale: {
-            $gte: startDate,
-            $lte: endDate
-          }
-        }
-      },
-      {
-        $group: {
-          _id: '$category',
-          count: { $sum: 1 }
-        }
+    const products = await Product.find({
+      dateOfSale: {
+        $gte: startDate,
+        $lte: endDate
       }
-    ]);
+    });
 
-    if (categoryCounts.length === 0) {
-      return res.status(404).json({ message: 'No data found' });
-    }
+    const categoryCounts = {};
 
-    return categoryCounts;
+    products.forEach(product => {
+      const category = product.category;
+      if (categoryCounts[category]) {
+        categoryCounts[category]++;
+      } else {
+        categoryCounts[category] = 1;
+      }
+    });
+
+    const categoryCountsArray = Object.keys(categoryCounts).map(category => ({
+      category,
+      count: categoryCounts[category]
+    }));
+
+    return categoryCountsArray;
 
   } catch (error) {
-    console.error('Error fetching category count data:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    handleError(res, 'Error fetching category count data:')(error);
   }
 }
 
