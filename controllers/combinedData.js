@@ -1,16 +1,4 @@
 const { getStatistics, getPriceRangeData, getCategoryCount } = require('./sales');
-async function getStatisticsHelper(month) {
-    return await getStatistics({ params: { month } });
-  }
-  
-  async function getPriceRangeDataHelper(month) {
-    return await getPriceRangeData({ params: { month } });
-  }
-  
-  async function getCategoryItemCountHelper(month) {
-    return await getCategoryCount({ params: { month } });
-  }
-  
 
 async function getCombinedData(req, res) {
   try {
@@ -32,6 +20,19 @@ async function getCombinedData(req, res) {
     res.status(500).json({ message: 'Internal server error' });
   }
 }
+
+async function getStatisticsHelper(month) {
+  return await getStatistics({ params: { month } });
+}
+
+async function getPriceRangeDataHelper(month) {
+  return await getPriceRangeData({ params: { month } });
+}
+
+async function getCategoryItemCountHelper(month) {
+  return await getCategoryCount({ params: { month } });
+}
+
 module.exports = {
   getCombinedData
 };

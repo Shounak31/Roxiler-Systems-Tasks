@@ -1,34 +1,20 @@
 const Product = require('../models/model');
 
-function getMonthRange(month) {
-  const monthNames = [
-    "january", "february", "march", "april", "may", "june",
-    "july", "august", "september", "october", "november", "december"
-  ];
-  const monthNumber = monthNames.indexOf(month.toLowerCase());
-
-  if (monthNumber === -1) {
-    throw new Error("Invalid month");
-  }
-
-  const startDate = new Date(2021, monthNumber, 1);
-  const endDate = new Date(2022, monthNumber + 1, 0);
-
-  return { startDate, endDate };
-}
-
-function handleError(res, errorMessage) {
-  return (error) => {
-    console.error(errorMessage, error);
-    res.status(500).json({ message: 'Internal server error' });
-    throw error;
-  };
-}
-
 async function getStatistics(req, res) {
   try {
     const { month } = req.params;
-    const { startDate, endDate } = getMonthRange(month);
+    const monthNames = [
+      "january", "february", "march", "april", "may", "june",
+      "july", "august", "september", "october", "november", "december"
+    ];
+    const monthNumber = monthNames.indexOf(month.toLowerCase());
+
+    if (monthNumber === -1) {
+      return res.status(400).json({ error: "Invalid month" });
+    }
+
+    const startDate = new Date(2021, monthNumber, 1);
+    const endDate = new Date(2022, monthNumber + 1, 0); 
 
     const products = await Product.find({
       dateOfSale: {
@@ -48,14 +34,26 @@ async function getStatistics(req, res) {
     };
 
   } catch (error) {
-    handleError(res, 'Error fetching statistics data:',error);
+    console.error('Error occurred:', error);
+    throw error; // Propagate the error to the caller
   }
 }
 
 async function getPriceRangeData(req, res) {
   try {
     const { month } = req.params;
-    const { startDate, endDate } = getMonthRange(month);
+    const monthNames = [
+      "january", "february", "march", "april", "may", "june",
+      "july", "august", "september", "october", "november", "december"
+    ];
+    const monthNumber = monthNames.indexOf(month.toLowerCase());
+
+    if (monthNumber === -1) {
+      return res.status(400).json({ error: "Invalid month" });
+    }
+
+    const startDate = new Date(2021, monthNumber, 1);
+    const endDate = new Date(2022, monthNumber + 1, 0); 
 
     const products = await Product.find({
       dateOfSale: {
@@ -90,16 +88,27 @@ async function getPriceRangeData(req, res) {
     });
 
     return countsByRange;
-
   } catch (error) {
-    handleError(res, 'Error fetching price range data:',error);
+    console.error('Error fetching price range data:', error);
+    throw error; // Propagate the error to the caller
   }
 }
 
 async function getCategoryCount(req, res) {
   try {
     const { month } = req.params;
-    const { startDate, endDate } = getMonthRange(month);
+    const monthNames = [
+      "january", "february", "march", "april", "may", "june",
+      "july", "august", "september", "october", "november", "december"
+    ];
+    const monthNumber = monthNames.indexOf(month.toLowerCase());
+
+    if (monthNumber === -1) {
+      return res.status(400).json({ error: "Invalid month" });
+    }
+
+    const startDate = new Date(2021, monthNumber, 1);
+    const endDate = new Date(2022, monthNumber + 1, 0); 
 
     const products = await Product.find({
       dateOfSale: {
@@ -127,12 +136,13 @@ async function getCategoryCount(req, res) {
     return categoryCountsArray;
 
   } catch (error) {
-    handleError(res, 'Error fetching category count data:',error);
+    console.error('Error fetching category count data:', error);
+    throw error; // Propagate the error to the caller
   }
 }
 
-module.exports = {
+module.exports = { 
   getStatistics,
   getPriceRangeData,
-  getCategoryCount
+  getCategoryCount,
 };
