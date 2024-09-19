@@ -2,41 +2,53 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import BarChart from './BarChart';
 import Statistics from './Statistics';
-import TransactionsTable from './TransactionsTable';
+import TransactionsTable from './TransactionTable';
+import PieChart from './PieChart';
 
 const Dashboard = () => {
   const [month, setMonth] = useState('march');
   const [transactions, setTransactions] = useState([]);
   const [statistics, setStatistics] = useState({});
   const [barChartData, setBarChartData] = useState([]);
+  const [pieChartData, setPieChartData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
-        const transactionsRes = await axios.get(`http://localhost:6000/api/transactions?month=${month}`);
-        console.log('Transactions:', transactionsRes.data); 
+        const transactionsRes = await axios.get(`http://localhost:6060/api/transactions?month=${month}`);
         setTransactions(transactionsRes.data);
 
-        const statisticsRes = await axios.get(`http://localhost:6000/api/statistics/${month}`);
-        console.log('Statistics:', statisticsRes.data); 
+        const statisticsRes = await axios.get(`http://localhost:6060/api/statistics/${month}`);
         setStatistics(statisticsRes.data);
 
-        const barChartRes = await axios.get(`http://localhost:6000/api/sales/price-range/${month}`);
-        console.log('BarChart Data:', barChartRes.data);  
+        const barChartRes = await axios.get(`http://localhost:6060/api/sales/price-range/${month}`);
         setBarChartData(barChartRes.data);
+
+        const pieChartRes = await axios.get(`http://localhost:6060/api/sales/category-items/${month}`);
+        setPieChartData(pieChartRes.data);
       } catch (error) {
         console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchData();
   }, [month]);
 
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   return (
-    <div className="p-4">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">Transaction Dashboard</h1>
-        <select value={month} onChange={(e) => setMonth(e.target.value)} className="p-2 border rounded">
+    <div className="flex">
+      {/* Left Side Menu */}
+      <div className="w-1/5 p-4 bg-gray-100">
+        <h2 className="text-xl font-bold mb-4">Dashboard Menu</h2>
+        {/* Month Selector */}
+        <select value={month} onChange={(e) => setMonth(e.target.value)} className="p-2 border rounded w-full mb-4">
           <option value="january">January</option>
           <option value="february">February</option>
           <option value="march">March</option>
@@ -50,10 +62,27 @@ const Dashboard = () => {
           <option value="november">November</option>
           <option value="december">December</option>
         </select>
+
+        {/* Statistics Info */}
+        <Statistics statistics={statistics} month={month} />
       </div>
-      <TransactionsTable transactions={transactions} />
-      <Statistics statistics={statistics} month={month} />
-      <BarChart data={barChartData} month={month} />
+
+      {/* Main Dashboard Content */}
+      <div className="w-4/5 p-4">
+        <h1 className="text-2xl font-bold mb-4">Transaction Dashboard</h1>
+        {/* Transactions Table */}
+        <TransactionsTable transactions={transactions} />
+
+        {/* Bottom Section with Bar and Pie Charts */}
+        <div className="grid grid-cols-2 gap-4 my-4">
+          <div className="chart-container bg-gray-100 p-4 rounded-lg border-black shadow-lg hover:shadow-xl">
+            <BarChart data={barChartData} month={month} />
+          </div>
+          <div className="chart-container bg-gray-100 p-4 mx-2 rounded-lg border-black shadow-lg hover:shadow-xl">
+            <PieChart data={pieChartData} month={month} /> {/* Pass data and month to PieChart */}
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

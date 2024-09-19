@@ -10,26 +10,55 @@ import {
   Legend,
 } from 'chart.js';
 
+// Register necessary components
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const BarChart = ({ data, month }) => {
   const chartData = {
-    labels: data.map((d) => d.range),
+    labels: data.map((d) => `${d._id} - ${d._id + 99}`),  // Displaying price range as "_id - (_id + 99)"
     datasets: [
       {
         label: 'Number of items',
         data: data.map((d) => d.count),
-        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-        borderColor: 'rgba(75, 192, 192, 1)',
-        borderWidth: 1,
+        backgroundColor: 'rgba(173, 216, 230, 1)',  // Dark grey color for bars
+        borderColor: 'rgba(0, 0, 0, 1)',  // Black border for bars
+        borderWidth: 2,  // Thicker border for contrast
       },
     ],
   };
 
+  const options = {
+    plugins: {
+      legend: {
+        labels: {
+          color: '#333',  // Darker text for legend
+        },
+      },
+    },
+    scales: {
+      x: {
+        ticks: {
+          color: '#333',  // Darker text for x-axis labels
+        },
+        grid: {
+          display: false,  // Remove grid lines from the x-axis
+        },
+      },
+      y: {
+        ticks: {
+          color: '#333',  // Darker text for y-axis labels
+        },
+        grid: {
+          display: false,  // Remove grid lines from the y-axis
+        },
+      },
+    },
+  };
+
   return (
-    <div className="bg-gray-100 p-4 rounded">
-      <h2 className="text-xl font-bold">Bar Chart Stats - {month}</h2>
-      <Bar data={chartData} />
+    <div>
+      <h2 className="text-xl font-bold text-gray-800">Bar Chart Stats - {month}</h2>
+      <Bar data={chartData} options={options} />
     </div>
   );
 };
@@ -37,7 +66,7 @@ const BarChart = ({ data, month }) => {
 BarChart.propTypes = {
   data: PropTypes.arrayOf(
     PropTypes.shape({
-      range: PropTypes.string.isRequired,
+      _id: PropTypes.number.isRequired,  // Use _id as the price range start
       count: PropTypes.number.isRequired,
     })
   ).isRequired,
