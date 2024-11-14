@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import BarChart from './BarChart';
 import Statistics from './Statistics';
-import TransactionsTable from './TransactionTable';
+import TransactionsTable from './TransactionsTable';
 import PieChart from './PieChart';
 
 const Dashboard = () => {

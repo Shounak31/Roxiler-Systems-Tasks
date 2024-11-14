@@ -30,7 +30,6 @@ function buildMatchObject(month, search) {
     match.$or = [
       { title: { $regex: searchRegex } },
       { description: { $regex: searchRegex } },
-      { price: parseFloat(search) || 0 },
     ];
   }
 

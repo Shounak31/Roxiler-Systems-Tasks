@@ -12,14 +12,16 @@ async function fetchData() {
   }
 }
 
-async function seedDatabase() {
+async function seedDatabase(req, res) {
   try {
     const data = await fetchData();
     await Product.deleteMany({});
     await Product.insertMany(data);
     console.log("Database seeded successfully!");
+    res.json({ message: "Database seeded successfully!" });
   } catch (error) {
     console.error("Error seeding database:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 }
 

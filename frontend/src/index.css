@@ -3,10 +3,10 @@
 @import "tailwindcss/utilities";
 
 .chart-container {
-    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth transition */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; 
 }
 
 .chart-container:hover {
-    transform: scale(1.05); /* Enlarge by 10% */
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); /* Add shadow for a better hover effect */
+    transform: scale(1.05); 
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); 
 }

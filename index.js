@@ -5,7 +5,7 @@ const cors = require("cors");
 const Routes = require("./routes/Routes");
 
 const app = express();
-const PORT = process.env.PORT || 6000;
+const PORT = process.env.PORT || 6060;
 
 connectDatabase(process.env.MONGO_URL)
   .then(() => {
