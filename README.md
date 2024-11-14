@@ -36,7 +36,7 @@
 **GET /api/initialize-db/**
 - Fetches JSON data from the third-party API and initializes the database with seed data.
 - **Response:** Status message indicating the result of the operation.
-- **Example:** `http://localhost:6000/api/initialize-db/`
+- **Example:** `http://localhost:6060/api/initialize-db/`
 
 #### 2. List All Transactions
 **GET /api/transactions**
@@ -46,7 +46,7 @@
   - `page` (optional): Page number for pagination (default: 1).
   - `perPage` (optional): Number of records per page (default: 10).
 - **Response:** List of product transactions based on search and pagination parameters.
-- **Example:** `http://localhost:6000/api/transactions?month=March`
+- **Example:** `http://localhost:6060/api/transactions?month=March`
 
 #### 3. Statistics
 **GET /api/statistics/:month**
@@ -56,7 +56,7 @@
   - Total sale amount of the selected month.
   - Total number of sold items of the selected month.
   - Total number of not sold items of the selected month.
-- **Example:** `http://localhost:6000/api/statistics/november`
+- **Example:** `http://localhost:6060/api/statistics/november`
 
 #### 4. Bar Chart Data
 **GET /api/sales/price-range/:month**
@@ -74,7 +74,7 @@
     - 701 - 800
     - 801 - 900
     - 901 and above
-- **Example:** `http://localhost:6000/api/sales/price-range/november`
+- **Example:** `http://localhost:6060/api/sales/price-range/november`
 
 #### 5. Pie Chart Data
 **GET /api/sales/category-items/:month**
@@ -85,14 +85,14 @@
     - X category: 20 items
     - Y category: 5 items
     - Z category: 3 items
-- **Example:** `http://localhost:6000/api/sales/category-items/november`
+- **Example:** `http://localhost:6060/api/sales/category-items/november`
 
 #### 6. Combined Data
 **GET /api/sales/combined-data/:month**
 - **Parameters:**
   - `month` (required): The month to filter transactions.
 - **Response:** Combined JSON response from the Statistics, Bar Chart, and Pie Chart APIs.
-- **Example:** `http://localhost:6000/api/sales/combined-data/november`
+- **Example:** `http://localhost:6060/api/sales/combined-data/november`
 
 ### Notes
 - Ensure the backend server is running using `nodemon index.js`.
